@@ -12,6 +12,8 @@ import com.baseflow.geolocator.errors.ErrorCodes;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import com.huawei.hms.api.HuaweiApiAvailability;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -70,7 +72,9 @@ public class GeolocationManager
 
     return isGooglePlayServicesAvailable(context)
         ? new FusedLocationClient(context, locationOptions)
-        : new LocationManagerClient(context, locationOptions);
+        : isHuaweiServicesAvailable(context)
+            ? new HuaweiFusedLocationClient(context, locationOptions)
+            : new LocationManagerClient(context, locationOptions);
   }
 
   private boolean isGooglePlayServicesAvailable(Context context) {
@@ -82,7 +86,21 @@ public class GeolocationManager
     // If the Google API class is not available conclude that the play services
     // are unavailable. This might happen when the GMS package has been excluded by
     // the app developer due to its proprietary license.
-    catch(NoClassDefFoundError e) {
+    catch (NoClassDefFoundError e) {
+      return false;
+    }
+  }
+
+  private boolean isHuaweiServicesAvailable(Context context) {
+    try {
+      HuaweiApiAvailability huaweiApiAvailability = HuaweiApiAvailability.getInstance();
+      int resultCode = huaweiApiAvailability.isHuaweiMobileServicesAvailable(context);
+      return resultCode == com.huawei.hms.api.ConnectionResult.SUCCESS;
+    }
+    // If the Huawei API class is not available conclude that the hms services
+    // are unavailable. This might happen when the HMS package has been excluded by
+    // the app developer due to its proprietary license.
+    catch (NoClassDefFoundError e) {
       return false;
     }
   }

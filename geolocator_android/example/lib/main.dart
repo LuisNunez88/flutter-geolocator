@@ -286,8 +286,8 @@ class _GeolocatorWidgetState extends State<GeolocatorWidget> {
     if (_positionStreamSubscription == null) {
       final androidSettings = AndroidSettings(
         accuracy: LocationAccuracy.best,
-        distanceFilter: 10,
-        forceLocationManager: false,
+        // distanceFilter: 10,
+        forceLocationManager: true,
         foregroundNotificationConfig: const ForegroundNotificationConfig(
           notificationText:
               "Example app will continue to receive your location even when you aren't using it",
